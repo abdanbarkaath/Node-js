@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/assets/style.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      h2 {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include ('partials/nav') %>
+    <h1>profile page</h1>
+    <!-- fills the form on the basis of query -->
+    <form action="/profile" method="post">
+      <label>name</label>
+      <input type="text" name="name" id="name" value="" />
+      <label>age</label>
+      <input type="text" name="age" id="age" value="" />
+      <label>height</label>
+      <input type="text" name="height" id="height" value="" />
+      <input type="submit" value="submit" />
+    </form>
+  </body>
+</html>
