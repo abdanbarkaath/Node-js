@@ -1,5 +1,5 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 
 const port = 3000;
 
@@ -11,5 +11,9 @@ var db = require('./models/db');
 var routes = require('./controllers/users');
 //routes set in controller js
 app.use('/', routes);
+// app.use('/api/v1/', routes);
 
-app.listen(port)
+// Gets only the doctor routes
+// app.use('/doctor/', doctorRoutes);
+
+app.listen(port);

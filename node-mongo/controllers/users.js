@@ -19,8 +19,8 @@ router.get('/login', function (req, res) {
     res.render('login');
 });
 
-router.get('/user/:id', function (req, res) {
-    User.findOne({}, function (err, data) {
+router.get('/user/:name', function (req, res) {
+    User.findOne({name: req.params.name}, function (err, data) {
         res.render('user', { data: data });
     })
 });
