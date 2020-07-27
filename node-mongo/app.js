@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 
-const port = 3000;
-
-app.set('view engine', 'ejs');
+//only calling it ensures that it runs
 //calls the database to connect
-var db = require('./models/db');
+require('./models/db');
+
+
+const port = 3000;
+app.set('view engine', 'ejs');
+
 
 //gets the routes from the controller
 var routes = require('./controllers/users');

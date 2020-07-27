@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser'); //parses information from POST
 
-var User = require('../models/users')
+var User = require('../models/user')
 // parse application/x-www-form-urlencoded
 router.use(bodyParser.urlencoded({ extended: false }))
 
