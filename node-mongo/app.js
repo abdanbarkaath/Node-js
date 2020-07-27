@@ -3,7 +3,7 @@ const app = express();
 
 //only calling it ensures that it runs
 //calls the database to connect
-require('./models/db');
+require('./controllers/db');
 
 
 const port = 3000;
