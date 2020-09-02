@@ -1,5 +1,9 @@
 const express = require('express');
 const app = express();
+var bodyParser = require('body-parser'); 
+//converts url code to json format
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
 
 //only calling it ensures that it runs
 //calls the database to connect

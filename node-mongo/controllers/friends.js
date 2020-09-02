@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser'); //parses information from POST
 
-//converts url code to json format
-router.use(bodyParser.urlencoded({ extended: false }))
-router.use(bodyParser.json());
+// //converts url code to json format
+// router.use(bodyParser.urlencoded({ extended: false }))
+// router.use(bodyParser.json());
 
 const Friends = require('../models/friend');
 
