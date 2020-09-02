@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var validator = require('validator');
 
+
 /**
  * call the database from the db 
  * mongo is not connected until the data base is not called

@@ -9,8 +9,6 @@ router.use(bodyParser.urlencoded({ extended: false }))
 //json parser
 router.use(bodyParser.json());
 
-
-
 router.get('/', function (req, res) {
     res.render('home');
     User.find({ name: 'qadeer' }, (err, data) => {
@@ -33,7 +31,7 @@ router.get('/profile', function (req, res) {
 });
 
 // router.post('/profile', (req, res) => {
-//     User.create({ name: req.body.name, age: req.body.age, height: req.body.height, }, (err, data) => {
+//     User.create({ name: req.body.name, age: req.body.age, height: req.       .height, }, (err, data) => {
 //         console.log(err, 'err');
 //         console.log(data, 'data');
 //     })

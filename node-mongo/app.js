@@ -5,15 +5,20 @@ const app = express();
 //calls the database to connect
 require('./controllers/db');
 
-
 const port = 3000;
 app.set('view engine', 'ejs');
 
 
 //gets the routes from the controller
 var routes = require('./controllers/users');
-//routes set in controller js
-app.use('/', routes);
+var friends = require('./controllers/friends');
+
+/**
+ * based on the path the routes will be rendered
+ */
+app.use('/admins/', routes);
+app.use('/friends/', friends);
+// app.use('/', {...routes, ...friends});
 // app.use('/api/v1/', routes);
 
 // Gets only the doctor routes
