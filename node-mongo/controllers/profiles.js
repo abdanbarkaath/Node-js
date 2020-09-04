@@ -80,6 +80,7 @@ router.post('/addprofile', async (req, res) => {
 router.delete('/removeprofile/:name', async (req, res) => {
     try {
         req.params.name = req.params.name.toLowerCase()
+        console.log(req.params.name);
         const profileFound = await Profile.findOneAndDelete({ name: req.params.name });
         console.log(profileFound);
         if (profileFound) {
@@ -147,13 +148,13 @@ router.patch('/updateprofile/:id', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const user = await Profile.findOne({ name: req.body.name });
+        const user = await Profile.findByCredentials(req.body.name, req.body.password);
         if (!user) {
             throw new Error('unable to login');
         }
         //comares the current string code with the users hash code
         const isMatch = await bycript.compare(req.body.password, user.password);
-        // const token = await user.generateAuthToken();
+        const token = await user.generateAuthToken();
         // res.status(200).send({ user, token })
         user.generateAuthToken()
             .then((token) => {

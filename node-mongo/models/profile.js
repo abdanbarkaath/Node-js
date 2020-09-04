@@ -56,6 +56,20 @@ profileSchema.methods.generateAuthToken = async function generateAuthToken() {
     }
 };
 
+// for login 
+
+profileSchema.statics.findByCredentials = async (name, password) => {
+    const user = await Profile.findOne({ name });
+    if (!user) {
+        throw new Error('unable to login');
+    }
+    const isMatch = await bycript.compare(password, user.password);
+    if (!isMatch) {
+        throw new Error('invalid password');
+    }
+    return user;
+}
+
 //middleware to convert password to hash
 profileSchema.pre('save', async function () {
     if (this.isModified('password')) {
