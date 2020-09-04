@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var validator = require('validator')
 var bycript = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 
 var profileSchema = new mongoose.Schema({
     name: {
@@ -20,33 +22,47 @@ var profileSchema = new mongoose.Schema({
                 throw new Error('Password is empty');
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true,
+        }
+    }]
 })
 
 // for login 
 
-profileSchema.statics.findByCredentials = async (name, password) => {
-    const user = await Profile.find({ name });
-    if(!user) {
-        throw new Error ('unable to login');
-    }
+profileSchema.methods.comparePassword = function comparePassword(passwrd, cb) {
+    // Compare the input password with stored hash password in dB.
+    bcrypt.compare(passwrd, this.password, (err, isMatch) => {
+        if (err) {
+            return cb(err);
+        }
+        return cb(null, isMatch);
+    });
+};
 
-    const isMatch = await bycript.compare(password, user.password);
+//general method to generate auth token
 
-    if(!isMatch){
-        throw new Error('invalid password');
+profileSchema.methods.generateAuthToken = async function generateAuthToken() {
+    try {
+        const token = await jwt.sign({ _id: this._id.toString() }, 'profileLogin');
+        this.tokens = this.tokens.concat({ token })
+        await this.save();
+        return token;
+    } catch (e) {
+        console.log(e);
     }
-    return user;
-}
+};
 
 //middleware to convert password to hash
 profileSchema.pre('save', async function () {
-    if (this.isModified('password')) { 
+    if (this.isModified('password')) {
         this.password = await bycript.hash(this.password, 8);
     }
-    next();
 })
 
-var profile = mongoose.model('Profile', profileSchema);
+var Profile = mongoose.model('Profile', profileSchema);
 
-module.exports = profile;
+module.exports = Profile;

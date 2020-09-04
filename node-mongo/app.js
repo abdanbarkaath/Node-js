@@ -5,6 +5,9 @@ const app = express();
 const bcrypt = require('bcrypt');
 const saltRounds = 8; // number of rounds to be performed
 
+//jwt
+const jwt = require('jsonwebtoken');
+
 var bodyParser = require('body-parser');
 //converts url code to json format
 app.use(bodyParser.urlencoded({ extended: false }))

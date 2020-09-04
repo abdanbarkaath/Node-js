@@ -1,12 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var bycript = require('bcrypt');
+//import middleware
+const auth = require('../middleware/auth');
 
 const Profile = require('../models/profile');
 
 /**
  * Gets the list of profiles
+ * imports and adds the middleware
+ * suppose there is a  list of task by all the people then with auth middleware we will be able to show only those task which are available to the user
+ * /games will only list out the games of this particular user and not all the games of different users 
  */
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         Profile.find({}).then((data) => {
             res.send(data)
@@ -14,6 +20,24 @@ router.get('/', async (req, res) => {
             res.send(err);
         });
 
+    } catch (error) {
+        res.send(error);
+        console.log(error);
+    }
+});
+/**
+ * suppose there is a  list of task by all the people then with auth middleware we will be able to show only those task which are available to the user
+ * /games will only list out the games of this particular user and not all the games of different users 
+ * This will only work if we have the header
+ * so we get the id from the header and we use the middleware to check if user is logged in and if yes then show the user profile
+ */
+router.get('/me', auth, async (req, res) => {
+    try {
+        if (req.profile) {
+            res.send(req.profile);
+        } else {
+            res.status(400).send('Please login')
+        }
     } catch (error) {
         res.send(error);
         console.log(error);
@@ -123,12 +147,26 @@ router.patch('/updateprofile/:id', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const user = await Profile.findByCredentials(req.body.name, req.body.password);
-        console.log(user, 'waiting');
-        res.send(user);
+        const user = await Profile.findOne({ name: req.body.name });
+        if (!user) {
+            throw new Error('unable to login');
+        }
+        //comares the current string code with the users hash code
+        const isMatch = await bycript.compare(req.body.password, user.password);
+        // const token = await user.generateAuthToken();
+        // res.status(200).send({ user, token })
+        user.generateAuthToken()
+            .then((token) => {
+                res.status(200).send({ user, token })
+            }).catch((e) => {
+                console.log(e);
+            })
+        if (!isMatch) {
+            throw new Error('invalid password');
+        }
     }
     catch (e) {
-        res.send(e)
+        res.send(e.message);
     }
 })
 
