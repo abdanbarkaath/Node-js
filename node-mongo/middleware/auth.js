@@ -11,6 +11,7 @@ const auth = async (req, res, next) => {
             throw new Error('no such profile found')
         }
         //stores the profile for later use like vuex
+        req.token = token;
         req.profile = profile;
         next();
     } catch (e) {

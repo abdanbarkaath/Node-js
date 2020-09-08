@@ -149,12 +149,8 @@ router.patch('/updateprofile/:id', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const user = await Profile.findByCredentials(req.body.name, req.body.password);
-        if (!user) {
-            throw new Error('unable to login');
-        }
         //comares the current string code with the users hash code
         const isMatch = await bycript.compare(req.body.password, user.password);
-        const token = await user.generateAuthToken();
         // res.status(200).send({ user, token })
         user.generateAuthToken()
             .then((token) => {
@@ -168,6 +164,25 @@ router.post('/login', async (req, res) => {
     }
     catch (e) {
         res.send(e.message);
+    }
+})
+
+router.post('/logout', auth, async (req, res) => {
+    try {
+        req.profile.tokens = req.profile.tokens.filter((user) => user.token !== req.token )
+        await req.profile.save();
+        res.send(req.profile.tokens)
+    } catch (e) {
+        res.status(500).send(e)
+    }
+})
+router.post('/logoutall', auth, async (req, res) => {
+    try {
+        req.profile.tokens = [];
+        await req.profile.save();
+        res.send(req.profile.tokens)
+    } catch (e) {
+        res.status(500).send(e)
     }
 })
 
