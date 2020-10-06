@@ -12,7 +12,7 @@ const Profile = require('../models/profile');
  * suppose there is a  list of task by all the people then with auth middleware we will be able to show only those task which are available to the user
  * /games will only list out the games of this particular user and not all the games of different users 
  */
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         Profile.find({}).then((data) => {
             res.send(data)
@@ -76,18 +76,12 @@ router.post('/addprofile', async (req, res) => {
 
 /**
  * Searches and removes the specific User
+ * Using auth middleware so that only verified user can delete 
  */
-router.delete('/removeprofile/:name', async (req, res) => {
+router.delete('/removeprofile/me', auth, async (req, res) => {
     try {
-        req.params.name = req.params.name.toLowerCase()
-        console.log(req.params.name);
-        const profileFound = await Profile.findOneAndDelete({ name: req.params.name });
-        console.log(profileFound);
-        if (profileFound) {
-            res.send({ message: 'profile removed successfully' })
-        } else {
-            res.send({ message: 'No such user found' });
-        }
+        await req.profile.remove();
+        res.send({ message: 'profile removed successfully' })
     } catch (error) {
         res.send(error)
     }
@@ -125,7 +119,7 @@ router.patch('/updateprofile', async (req, res) => {
     }
 });
 
-router.patch('/updateprofile/:id', async (req, res) => {
+router.patch('/updateprofile/me', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowUpdates = ['name', 'password'];
     const isValid = updates.every((update) => allowUpdates.includes(update));
@@ -133,14 +127,11 @@ router.patch('/updateprofile/:id', async (req, res) => {
         return res.status(400).send({ error: 'invalid params' });
     }
     try {
-        const user = await Profile.findById(req.params.id).exec();
-        updates.forEach((update) => user[update] = req.body[update]);
-        await user.save();
-        if (!user) {
-            res.status(400).send({ message: 'no such user exists' })
-        } else {
-            res.status(200).send({ message: 'profile updated successfully' })
-        }
+        //You get the profile same as the modal name that you have defined in the req params
+        console.log(req.profile);
+        updates.forEach((update) => req.profile[update] = req.body[update]);
+        await req.profile.save();
+        res.status(200).send(req.profile)
     } catch (error) {
         res.send(error)
     }
@@ -150,7 +141,7 @@ router.post('/login', async (req, res) => {
     try {
         const user = await Profile.findByCredentials(req.body.name, req.body.password);
         //comares the current string code with the users hash code
-        const isMatch = await bycript.compare(req.body.password, user.password);
+        // const isMatch = await bycript.compare(req.body.password, user.password);
         // res.status(200).send({ user, token })
         user.generateAuthToken()
             .then((token) => {
@@ -158,9 +149,9 @@ router.post('/login', async (req, res) => {
             }).catch((e) => {
                 console.log(e);
             })
-        if (!isMatch) {
-            throw new Error('invalid password');
-        }
+        // if (!isMatch) {
+        //     throw new Error('invalid password');
+        // }
     }
     catch (e) {
         res.send(e.message);
@@ -169,7 +160,8 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', auth, async (req, res) => {
     try {
-        req.profile.tokens = req.profile.tokens.filter((user) => user.token !== req.token )
+        console.log(req);
+        req.profile.tokens = req.profile.tokens.filter((user) => user.token !== req.token)
         await req.profile.save();
         res.send(req.profile.tokens)
     } catch (e) {

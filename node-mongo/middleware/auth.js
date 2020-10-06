@@ -15,8 +15,7 @@ const auth = async (req, res, next) => {
         req.profile = profile;
         next();
     } catch (e) {
-        console.log(e);
-        next();
+        res.send({error :'please login'});
     }
 }
 module.exports = auth;

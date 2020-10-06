@@ -31,11 +31,22 @@ var profileSchema = new mongoose.Schema({
     }]
 })
 
+/**
+ * toJSON automatically removes the tokens
+ */
+// profileSchema.methods.toJSON = function () {
+//     const userObj = this.toObject();
+//     delete userObj.tokens;
+//     delete userObj.password;
+//     return userObj;
+// };
+
+
 // for login 
 
-profileSchema.methods.comparePassword = function comparePassword(passwrd, cb) {
+profileSchema.methods.comparePassword = function (password, cb) {
     // Compare the input password with stored hash password in dB.
-    bcrypt.compare(passwrd, this.password, (err, isMatch) => {
+    bcrypt.compare(password, this.password, (err, isMatch) => {
         if (err) {
             return cb(err);
         }
@@ -45,9 +56,9 @@ profileSchema.methods.comparePassword = function comparePassword(passwrd, cb) {
 
 //general method to generate auth token
 
-profileSchema.methods.generateAuthToken = async function generateAuthToken() {
+profileSchema.methods.generateAuthToken = async function () {
     try {
-        const token = await jwt.sign({ _id: this._id.toString() }, 'profileLogin');
+        const token = await jwt.sign({ _id: this._id.toString() }, 'profileLogin', { expiresIn: '3h' });
         this.tokens = this.tokens.concat({ token })
         await this.save();
         return token;
