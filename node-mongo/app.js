@@ -25,6 +25,7 @@ app.set('view engine', 'ejs');
 var routes = require('./controllers/users');
 var friends = require('./controllers/friends');
 var profiles = require('./controllers/profiles');
+var tasks = require('./controllers/tasks');
 
 /**
  * based on the path the routes will be rendered
@@ -32,6 +33,7 @@ var profiles = require('./controllers/profiles');
 app.use('/admins/', routes);
 app.use('/friends/', friends);
 app.use('/profiles/', profiles);
+app.use('/tasks/', tasks);
 // app.use('/', {...routes, ...friends});
 // app.use('/api/v1/', routes);
 
