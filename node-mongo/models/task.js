@@ -10,6 +10,11 @@ var taskSchema = new mongoose.Schema({
     completed: {
         type: Boolean,
         required: true,
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Profile', //Same name as in the profile modal schema
     }
 })
 

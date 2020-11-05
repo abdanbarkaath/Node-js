@@ -41,3 +41,7 @@ app.use('/tasks/', tasks);
 // app.use('/doctor/', doctorRoutes);
 
 app.listen(port);
+
+
+const Task = require('./models/task')
+const Profile = require('./models/profile')

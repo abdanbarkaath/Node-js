@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var validator = require('validator')
 var bycript = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const Task = require('./task');
 
 var profileSchema = new mongoose.Schema({
     name: {
@@ -29,6 +29,17 @@ var profileSchema = new mongoose.Schema({
             required: true,
         }
     }]
+})
+
+
+/**
+ * Set connection between task and profiles with some keys
+ */
+profileSchema.virtual('tasks', {
+    ref: "Task", //With whom the connection is set to be established
+    localField: "_id", //Used to identify using this specific key
+    foreignField: "owner" //What key are we using from the tasks data base to establish a connection
+
 })
 
 /**
@@ -86,6 +97,12 @@ profileSchema.pre('save', async function () {
     if (this.isModified('password')) {
         this.password = await bycript.hash(this.password, 8);
     }
+})
+//middleware to convert remove all the task related to this profile
+profileSchema.pre('findOneAndDelete', async function () {
+    console.log('this got');
+    // await Task.deleteMany({ owner: this._id })
+    next();
 })
 
 var Profile = mongoose.model('Profile', profileSchema);

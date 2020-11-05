@@ -14,11 +14,18 @@ const Profile = require('../models/profile');
  */
 router.get('/', async (req, res) => {
     try {
-        Profile.find({}).then((data) => {
-            res.send(data)
-        }).catch((err) => {
-            res.send(err);
-        });
+        const profile = await Profile.find({})
+        if (profile) {
+            res.status(201).send(profile);
+        } else {
+            res.status(404).send({ message: "No profile found" })
+        }
+        // Profile.find({}).then((data) => {
+        //     res.send(data)
+        // }).catch((err) => {
+        //     res.send(err);
+        // });
+
 
     } catch (error) {
         res.send(error);
@@ -80,8 +87,16 @@ router.post('/addprofile', async (req, res) => {
  */
 router.delete('/removeprofile/me', auth, async (req, res) => {
     try {
-        await req.profile.remove();
-        res.send({ message: 'profile removed successfully' })
+        //  await req.profile.remove();
+        // const profile = await Profile.findByIdAndDelete({ _id: req.profile._id })
+        const id = req.profile._id.toString();
+        const profile = await Profile.findOneAndDelete({ _id: req.profile._id })
+        console.log(profile);
+        if (profile) {
+            res.send({ message: 'profile removed successfully' })
+        } else {
+            res.send({ message: 'some error occured' })
+        }
     } catch (error) {
         res.send(error)
     }
@@ -131,7 +146,7 @@ router.patch('/updateprofile/me', auth, async (req, res) => {
         console.log(req.profile);
         updates.forEach((update) => req.profile[update] = req.body[update]);
         await req.profile.save();
-        res.status(200).send(req.profile)
+        return res.status(200).send({ message: 'Password updated' });
     } catch (error) {
         res.send(error)
     }
