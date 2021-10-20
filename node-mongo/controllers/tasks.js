@@ -9,7 +9,15 @@ router.get('/', auth, async (req, res) => {
     try {
         //Appends the tasks array to the profile object
         //gets tasks specific to the login or id 
-        const profileTask = await req.profile.populate('tasks').execPopulate();
+        //Also adding search to the query by adding path in populate
+        const match = {};
+        if (req.query.completed) {
+            match.completed = req.query.completed;
+        }
+        const profileTask = await req.profile.populate({
+            path: 'tasks',
+            match
+        }).execPopulate();
         if (profileTask) {
             console.log(profileTask.tasks);
             res.status(201).send(profileTask.tasks);

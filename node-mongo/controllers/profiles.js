@@ -14,7 +14,7 @@ const Profile = require('../models/profile');
  */
 router.get('/', async (req, res) => {
     try {
-        const profile = await Profile.find({})
+        const profile = await Profile.find({});
         if (profile) {
             res.status(201).send(profile);
         } else {
@@ -40,8 +40,9 @@ router.get('/', async (req, res) => {
  */
 router.get('/me', auth, async (req, res) => {
     try {
+        let prof = await Profile.findById({_id:req.profile._id}).select("-password");
         if (req.profile) {
-            res.send(req.profile);
+            res.send(prof);
         } else {
             res.status(400).send('Please login')
         }
