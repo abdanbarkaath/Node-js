@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express"
 import { json, urlencoded } from "body-parser"
 import cors from "cors"
 import morgan from "morgan"
+import itemsRouter from "./items/item.router"
 
 const app: Application = express()
 // app.use(cors)
@@ -13,6 +14,8 @@ const log = (req: Request, res: Response, next: any) => {
   console.log("middleware")
   next()
 }
+
+app.use("/items", itemsRouter)
 
 app.get("/", log, (req: Request, res: Response) => res.send({ message: "hello world" }))
 app.get("/data", [log, log, log], (req: Request, res: Response) => res.send({ message: "hello world" }))
