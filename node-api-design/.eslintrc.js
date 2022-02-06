@@ -24,5 +24,6 @@ module.exports = {
     "prettier/prettier": "error",
     "import/extensions": "off",
     "import/no-relative-parent-imports": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
   },
 }
